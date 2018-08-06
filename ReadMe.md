@@ -18,6 +18,68 @@ FPS制御がまったくできていない。
     * 指定FPSと実行速度との差を埋める
         * 移動量を比率で算出して加算する
 
+# 技術情報
+
+## API
+
+### A. setInterval
+
+* [setInterval](https://developer.mozilla.org/ja/docs/Web/API/Window/setInterval)
+* [clearInterval](https://developer.mozilla.org/ja/docs/Web/API/WindowTimers/clearInterval)
+
+古いAPI。指定した間隔でくりかえし実行する。高負荷。
+
+### B. requestAnimationFrame
+
+* [requestAnimationFrame](https://developer.mozilla.org/ja/docs/Web/API/Window/requestAnimationFrame)
+* [cancelAnimationFrame](https://developer.mozilla.org/ja/docs/Web/API/Window/cancelAnimationFrame)
+
+新しいAPI。1/60秒ほどの速度で実行をくりかえす。非アクティブで低速化。
+
+#### class化
+
+Main.js
+```javascript
+const Loop = require('js/app/Loop'); // クラス定義のロード
+let loop = new Loop();               // インスタンス生成
+loop.Start();                        // アニメ開始
+
+// アニメ停止。タブ閉じ、ページ更新で発火。「とどまる」とアニメが停止したページが確認できる。
+window.onbeforeunload = function(e) {
+    loop.Stop();
+    return "停止！";
+};
+```
+
+Loop.js
+```javascript
+class Loop {
+    constructor() {
+        this.requestId = 0;
+    }
+    _Loop() { console.log(this.requestId); }
+    Start() {
+        this._Loop();
+        this.requestId = window.requestAnimationFrame(this.Start.bind(this));
+    }
+    Stop() { window.cancelAnimationFrame(this.requestId); }
+}
+```
+
+ポイントは`bind(this)`。ループしたいメソッドを対象に指定する。
+
+OK
+```javascript
+window.requestAnimationFrame(this.Start.bind(this));
+```
+
+NG
+```javascript
+window.requestAnimationFrame(this.Start);
+```
+
+NGの方法で実装すると`this`がnullになり、`Uncaught TypeError`エラーになる。OKの方法で実装すると解決する。[参考](https://stackoverflow.com/questions/28908999/use-requestanimationframe-in-a-class)
+
 # 開発環境
 
 * [Raspberry Pi](https://ja.wikipedia.org/wiki/Raspberry_Pi) 3 Model B

@@ -1,5 +1,5 @@
-define(function() {
-//define(function(require, exports, module) {
+//define(function() {
+define(function(require, exports, module) {
     return class Loop {
         constructor() {
             this.requestId = 0;

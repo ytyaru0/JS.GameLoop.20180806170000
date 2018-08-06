@@ -1,11 +1,14 @@
-define(function() {
-//define(function(require, exports, module) {
+//define(function() {
+define(function(require, exports, module) {
     return class Loop {
+//        constructor(method) {
         constructor() {
             this.requestId = 0;
             this.counter = 0;
             this.startTime = null;
-            //window.onbeforeunload = function(e) { window.cancelAnimationFrame(this.requestId); alert("cancelAnimationFrame実行！"); console.log("this:", this, "requestId", this.requestId); return "requestId " + this.requestId + " cancelAnimationFrame実行！"; }
+
+            // this.requestIdが更新されずアニメをキャンセルできない！！！！！
+            window.onbeforeunload = function(e) { window.cancelAnimationFrame(this.requestId); alert("cancelAnimationFrame実行！"); console.log("this:", this, "requestId", this.requestId); return "requestId " + this.requestId + " cancelAnimationFrame実行！"; }
         };
         _Loop() {
             console.log('this:', this);

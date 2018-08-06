@@ -1,11 +1,15 @@
-define(function() {
-//define(function(require, exports, module) {
+//define(function() {
+define(function(require, exports, module) {
     return class Loop {
+//        constructor(method) {
         constructor() {
             this.requestId = 0;
             this.counter = 0;
             this.startTime = null;
-            //window.onbeforeunload = function(e) { window.cancelAnimationFrame(this.requestId); alert("cancelAnimationFrame実行！"); console.log("this:", this, "requestId", this.requestId); return "requestId " + this.requestId + " cancelAnimationFrame実行！"; }
+            //this.private = "private!!";
+            //this.method = method;
+            //this.requestId = window.requestAnimationFrame(method);
+            //window.onbeforeunload = function(e) { window.cancelAnimationFrame(this.requestId); alert("cancelAnimationFrame実行！"); return "cancelAnimationFrame実行！"; }
         };
         _Loop() {
             console.log('this:', this);
@@ -25,12 +29,14 @@ define(function() {
             console.log(msg);
             document.body.innerHTML = msg;
         };
+//        _Private() { this.private = "PRIVATE!!"; return this.private; }
+//        _Initialize() { console.log("this:", this); alert("Initialize!! " + this._Private()); }
         Start() {
+            console.log("this:", this);
             this._Loop();
-            // https://stackoverflow.com/questions/28908999/use-requestanimationframe-in-a-class
+//            this.requestId = window.requestAnimationFrame(this.Start);
             this.requestId = window.requestAnimationFrame(this.Start.bind(this));
-            console.log("this:", this, "requestId", this.requestId);
-            
+//            this.requestId = window.requestAnimationFrame(this.method);
         }
         Stop() {
             window.cancelAnimationFrame(this.requestId); 

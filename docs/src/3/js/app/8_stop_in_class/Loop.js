@@ -5,6 +5,7 @@ define(function() {
             this.requestId = 0;
             this.counter = 0;
             this.startTime = null;
+            //window.onbeforeunload = function(e) { window.cancelAnimationFrame(this.requestId); alert("cancelAnimationFrame実行！"); console.log("this:", this, "requestId", this.requestId); return "requestId " + this.requestId + " cancelAnimationFrame実行！"; }
             window.onbeforeunload = function(e) {
                 this.Stop();
                 return "停止！！！！！！";
@@ -35,6 +36,8 @@ define(function() {
             console.log("this:", this, "requestId", this.requestId);
             
         }
-        Stop() { window.cancelAnimationFrame(this.requestId); }
+        Stop() {
+            window.cancelAnimationFrame(this.requestId); 
+        }
     };
 });

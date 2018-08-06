@@ -36,6 +36,20 @@ FPS制御がまったくできていない。
 
 新しいAPI。1/60秒ほどの速度で実行をくりかえす。非アクティブで低速化。
 
+#### beforeunloadイベント
+
+* [onbeforeunload](https://developer.mozilla.org/ja/docs/Web/API/WindowEventHandlers/onbeforeunload)
+
+以下のときに発火するイベント。
+
+* タブ閉じ（Ctrl+Wキー押下時）
+* タブ更新（F5キー押下時）
+* window.close()
+
+終了確認ダイアログが表示される。returnで表示文字列を返す必要がある。
+
+今回はここで終了せずキャンセルすれば、アニメ停止した様子が確認できるように実装した。
+
 #### class化
 
 Main.js
@@ -56,6 +70,10 @@ Loop.js
 class Loop {
     constructor() {
         this.requestId = 0;
+        window.onbeforeunload = function(e) {
+            this.Stop();
+            return ""; // 必要。
+        }.bind(this);
     }
     _Loop() { console.log(this.requestId); }
     Start() {
@@ -79,6 +97,36 @@ window.requestAnimationFrame(this.Start);
 ```
 
 NGの方法で実装すると`this`がnullになり、`Uncaught TypeError`エラーになる。OKの方法で実装すると解決する。[参考](https://stackoverflow.com/questions/28908999/use-requestanimationframe-in-a-class)
+
+#### class化2
+
+なお、停止もクラス内で実装したい場合は以下のようにする。
+
+Main.js
+```javascript
+const Loop = require('js/app/Loop'); // クラス定義のロード
+let loop = new Loop();               // インスタンス生成
+loop.Start();                        // アニメ開始
+```
+
+Loop.js
+```javascript
+class Loop {
+    constructor() {
+        this.requestId = 0;
+        window.onbeforeunload = function(e) {
+            this.Stop();
+            return ""; // 必要。
+        }.bind(this);
+    }
+    _Loop() { console.log(this.requestId); }
+    Start() {
+        this._Loop();
+        this.requestId = window.requestAnimationFrame(this.Start.bind(this));
+    }
+    Stop() { window.cancelAnimationFrame(this.requestId); }
+}
+```
 
 # 開発環境
 
